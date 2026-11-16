@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>用户管理 - 高考英语词汇3500</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 8h12v15h-2a2 2 0 0 0-2 2H11a2 2 0 0 1-2-2z'/><path d='M9 25a2 2 0 0 1 2-2h12'/></g></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div class="controls" style="justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button title="返回主页" aria-label="返回主页" onclick="location.href='index.html'">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+        </button>
+        <span style="font-weight:600;color:#1e293b">用户管理</span>
+        <a href="/report" class="admin-link" title="数据报表" style="display:inline-flex;align-items:center;gap:4px;text-decoration:none">
+          <svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M4 20V10M10 20V4M16 20v-7M22 20V8"/></svg>数据报表
+        </a>
+      </div>
+      <span id="userBar" class="user-bar" style="display:none">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span id="userName"></span>
+        <button class="logout-btn" id="logoutBtn" title="退出登录">退出</button>
+      </span>
+    </div>
+
+    <!-- 操作栏 -->
+    <div class="admin-toolbar">
+      <input type="text" id="searchInput" class="admin-search" placeholder="搜索用户名...">
+      <button id="addUserBtn" class="btn-primary">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新增用户
+      </button>
+    </div>
+
+    <!-- 用户表格 -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50px">ID</th>
+            <th>用户名</th>
+            <th style="width:120px">邮箱</th>
+            <th style="width:65px">角色</th>
+            <th style="width:55px">状态</th>
+            <th style="width:140px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="userBody"></tbody>
+      </table>
+    </div>
+    <p id="tableInfo" class="hint" style="text-align:center;margin-top:10px"></p>
+
+    <footer>&copy; 2026 word3500 contributors · GPL-3.0 · 改写自 pluto0x0/word3500</footer>
+    <footer>项目地址 https://github.com/nizitao/word3500-public</footer>
+  </div>
+
+  <!-- 新增/编辑用户弹窗 -->
+  <div class="modal-overlay" id="editModal" style="display:none">
+    <div class="modal-card">
+      <h3 id="modalTitle">新增用户</h3>
+      <form id="editForm" autocomplete="off">
+        <input type="hidden" id="editId">
+        <div class="form-group">
+          <label for="editUsername">用户名</label>
+          <input type="text" id="editUsername" required minlength="2" placeholder="英文字母开头">
+        </div>
+        <div class="form-group">
+          <label for="editPassword">密码</label>
+          <input type="password" id="editPassword" placeholder="留空则不修改（编辑时）" minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="editDisplayName">显示名</label>
+          <input type="text" id="editDisplayName" placeholder="可选">
+        </div>
+        <div class="form-group">
+          <label for="editEmail">邮箱</label>
+          <input type="email" id="editEmail" placeholder="可选">
+        </div>
+        <div class="form-group">
+          <label for="editRole">角色</label>
+          <select id="editRole">
+            <option value="user">普通用户</option>
+            <option value="admin">管理员</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="cancelBtn" class="btn-secondary">取消</button>
+          <button type="submit" id="saveBtn" class="btn-primary">保存</button>
+        </div>
+        <div class="error-msg" id="editError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 删除确认弹窗 -->
+  <div class="modal-overlay" id="confirmModal" style="display:none">
+    <div class="modal-card" style="max-width:360px">
+      <h3>确认删除</h3>
+      <p id="confirmMsg" style="color:#475569;margin:12px 0">确定要删除该用户吗？此操作不可撤销。</p>
+      <div class="form-actions">
+        <button id="confirmNo" class="btn-secondary">取消</button>
+        <button id="confirmYes" class="btn-danger">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script src="js/admin.js?v=20261102" data-cfasync="false"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 word3500 contributors
+# SPDX-License-Identifier: GPL-3.0
+
+# word3500 运行时依赖：无
+#
+# 服务端只使用 Python 3.10+ 标准库（http.server / sqlite3 / urllib / hashlib），
+# 不再需要 requests。此前这里是 requests>=2.25：在未安装该包的环境下
+# `import requests` 会直接抛 ModuleNotFoundError，服务完全起不来。
+#
+# 文件保留以兼容旧的部署脚本，内容为空即可：
+#   pip install -r requirements.txt

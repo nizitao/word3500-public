@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>高考英语词汇3500</title>
+  <script data-cfasync="false">
+    // 登录状态检查 + 用户名显示（页面渲染前执行）
+    var __auth_user = null;
+    (function(){
+      try {
+        var s = JSON.parse(localStorage.getItem('word3500_auth'));
+        // 只要还有 access_token 或 refresh_token 就放行：过期由 auth.js 自动续期
+        if (!s || (!s.access_token && !s.refresh_token)) {
+          location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+          return;
+        }
+        __auth_user = s.user || null;
+      } catch(e) {
+        location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+      }
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 8h12v15h-2a2 2 0 0 0-2 2H11a2 2 0 0 1-2-2z'/><path d='M9 25a2 2 0 0 1 2-2h12'/></g></svg>">
+  <link rel="stylesheet" href="style.css?v=20261107b">    <!-- 控制栏磨砂玻璃：blur(24px) + 半透明白 + 静态柔光 -->
+</head>
+<body>
+  <div id="app">
+    <h1>高考英语词汇3500</h1>
+
+    <div class="book-filter">
+      <label>册：<select id="bookSelect"><option value="">全部</option></select></label>
+      <label>单元：<select id="unitSelect" disabled><option value="">全部</option></select></label>
+    </div>
+
+    <div class="controls" id="controlsBar">
+      <button id="homeBtn" title="首页" aria-label="首页"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></button>
+      <button id="prevBtn" title="上一页" aria-label="上一页"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <span id="pageInfo">第 1 页</span>
+      <button id="nextBtn" title="下一页" aria-label="下一页"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <input type="text" id="pageInput" class="page-input" inputmode="numeric" pattern="[0-9]*" placeholder="页码" title="输入页码按回车跳转">
+      <button id="goPageBtn" class="go-page-btn" title="跳转到指定页">跳转</button>
+      <button id="topBtn" title="回到顶部" aria-label="回到顶部"><svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/><path d="M5 21h14"/></svg></button>
+
+      <span class="sep"></span>
+
+      <label class="accent"><input type="radio" name="accent" value="gb" checked><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>英音</label>
+      <label class="accent"><input type="radio" name="accent" value="us"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>美音</label>
+
+      <!-- 页内即时搜索：原先这个位置是「搜索」按钮，点一次要跳到 search.html 整页重载，
+           现在就地搜、就地出结果；右侧保留一个图标入口通往独立搜索页（高级搜索） -->
+      <label class="quick-search">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="quickSearchInput" class="quick-search-input" placeholder="搜单词 / 中文释义" autocomplete="off" spellcheck="false" aria-label="搜索单词或中文释义">
+      </label>
+      <a id="searchPageBtn" class="quick-search-more" href="/search.html" title="高级搜索（独立搜索页）" aria-label="高级搜索"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h6"/><circle cx="18" cy="12" r="1.6"/><circle cx="14" cy="17" r="1.6"/></svg></a>
+
+      <!-- 单词浏览 / 单词测试 / 收藏夹 已收进底部导航与中央快捷面板，
+           原先这里是三个重复跳转入口，点一次要跨页加载，故移除 -->
+
+      <span class="sep"></span>
+
+      <button id="playBtn" title="自动朗读"><svg class="icon" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>朗读</button>
+      <label><input type="radio" name="control" value="once" checked> 一遍</label>
+      <label><input type="radio" name="control" value="loop"> 循环</label>
+      <label><input type="radio" name="control" value="seq"> 顺序</label>
+
+      <span style="flex:1"></span>
+
+      <!-- 用户状态区 -->
+      <span id="userBar" class="user-bar">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span id="userName"></span>
+        <a id="adminLink" href="/admin" class="admin-link" title="用户管理">管理</a>
+        <a id="reportLink" href="/report" class="admin-link" title="数据报表" style="display:none">报表</a>
+        <button id="logoutBtn" class="logout-btn" title="退出登录">退出</button>
+      </span>
+    </div>
+
+    <table id="wordTable">
+      <thead>
+        <tr>
+          <th>编号</th><th id="starHeader">标记</th><th>单词</th><th>音标</th>
+          <th title="点击选中后，按「朗读」按钮从此单词开始自动朗读">选择</th><th>中文解释</th><th>朗读</th>
+        </tr>
+      </thead>
+      <tbody id="wordBody"></tbody>
+    </table>
+
+    <div id="searchResults"></div>
+
+    <footer>© word3500 · Python + HTML 重写版（发音来自有道 / 百度 TTS）</footer>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script src="js/app.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/quick-search.js?v=20261108" data-cfasync="false"></script>
+</body>
+</html>

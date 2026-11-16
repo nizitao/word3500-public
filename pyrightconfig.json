@@ -1,0 +1,16 @@
+{
+  "include": ["api", "utils"],
+  "exclude": ["**/__pycache__", "data", "web", "config"],
+  "typeCheckingMode": "strict",
+  "reportMissingTypeStubs": "none",
+  "reportPrivateUsage": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownLambdaType": "none",
+  "reportUnknownVariableType": "none",
+  "reportAny": "none",
+  "reportExplicitAny": "none",
+  "reportUntypedFunctionVariable": "none"
+}

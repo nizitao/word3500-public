@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>我 - 高考英语词汇3500</title>
+  <script data-cfasync="false">
+    (function(){
+      try {
+        var s = JSON.parse(localStorage.getItem('word3500_auth'));
+        if (!s || (!s.access_token && !s.refresh_token)) {
+          location.replace('/login?redirect=' + encodeURIComponent(location.pathname));
+          return;
+        }
+        window.__auth_user = s.user || null;
+      } catch(e) { location.replace('/login'); }
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round'><path d='M7 24V14M14 24V8M21 24V17M27 24V5'/></g></svg>">
+  <link rel="stylesheet" href="style.css?v=20261107b">
+  <style>
+    .me{max-width:640px;margin:0 auto;padding:8px 0 20px}
+    .me-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .me-head h1{font-size:22px;margin:0;text-align:left}
+    .me-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:16px;
+      box-shadow:var(--shadow-card);padding:22px;margin-bottom:16px}
+    .me-user{display:flex;align-items:center;gap:14px}
+    .me-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#2f6fed,#3b82f6);color:#fff;font-size:20px;font-weight:700;flex-shrink:0}
+    .me-name{font-size:17px;font-weight:700;color:var(--text-primary)}
+    .me-role{font-size:12px;color:var(--text-tertiary);margin-top:3px}
+    .me-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+    .me-stat{text-align:center;padding:10px 6px;border-radius:10px;background:var(--bg-hover)}
+    .me-stat b{display:block;font-size:19px;color:var(--primary);font-variant-numeric:tabular-nums}
+    .me-stat span{font-size:11px;color:var(--text-tertiary)}
+    .me-list{display:flex;flex-direction:column}
+    .me-item{display:flex;align-items:center;gap:12px;padding:14px 4px;text-decoration:none;
+      color:var(--text-primary);font-size:14px;border-bottom:1px solid var(--border-lighter)}
+    .me-item:last-child{border-bottom:none}
+    .me-item:hover{color:var(--primary)}
+    .me-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;
+      stroke-linecap:round;stroke-linejoin:round;color:var(--text-tertiary);flex-shrink:0}
+    .me-item:hover svg{color:var(--primary)}
+    .me-item em{font-style:normal;margin-left:auto;font-size:12px;color:var(--text-muted)}
+    .me-item.danger{color:var(--danger)}
+    .me-item.danger svg{color:var(--danger)}
+    .me-foot{text-align:center;font-size:11px;color:var(--text-muted);margin-top:20px;line-height:1.8}
+  </style>
+</head>
+<body>
+  <div class="me">
+    <div class="me-head">
+      <h1>我</h1>
+      <span id="userBar" class="user-bar"></span>
+    </div>
+
+    <section class="me-card">
+      <div class="me-user">
+        <div class="me-avatar" id="meAvatar">·</div>
+        <div>
+          <div class="me-name" id="meName">加载中…</div>
+          <div class="me-role" id="meRole"></div>
+        </div>
+      </div>
+      <div class="me-stats" id="meStats"></div>
+    </section>
+
+    <section class="me-card">
+      <div class="me-list">
+        <a class="me-item" href="/study">
+          <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 4-6"/></svg>
+          学习统计<em>打卡 · 日历 · 掌握率</em>
+        </a>
+        <a class="me-item" href="/study#badges">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5 7 22l5-2.5L17 22l-1.5-8.5"/></svg>
+          我的徽章<em id="meBadge">–</em>
+        </a>
+        <!-- 收藏夹 / 单词训练 已升为底部导航或中央快捷面板的一级入口，这里不再重复列一次 -->
+      </div>
+    </section>
+
+    <section class="me-card" id="meAdminCard" hidden>
+      <div class="me-list">
+        <a class="me-item" href="/admin">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+          用户管理<em>管理员</em>
+        </a>
+        <a class="me-item" href="/report">
+          <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V7M17 16v-9"/></svg>
+          数据报表<em>访问与行为</em>
+        </a>
+      </div>
+    </section>
+
+    <section class="me-card">
+      <div class="me-list">
+        <a class="me-item danger" href="#" id="meLogout">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          退出登录
+        </a>
+      </div>
+    </section>
+
+    <p class="me-foot">主题切换按钮在右上角 · 学习数据按浏览器本地时区统计</p>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script data-cfasync="false">
+    (function () {
+      var user = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+      if (user) {
+        var name = user.display_name || user.username || '用户';
+        document.getElementById('meName').textContent = name;
+        document.getElementById('meAvatar').textContent = String(name).slice(0, 1).toUpperCase();
+        document.getElementById('meRole').textContent =
+          (user.role === 'admin' ? '管理员' : '普通用户') +
+          (typeof isGuestUser === 'function' && isGuestUser() ? ' · 游客' : '');
+        if (user.role === 'admin') document.getElementById('meAdminCard').hidden = false;
+      }
+      var tz = -new Date().getTimezoneOffset();
+      if (typeof authFetch === 'function') {
+        authFetch('/api/study/summary?tz=' + tz).then(function (r) { return r.json(); }).then(function (d) {
+          var box = document.getElementById('meStats');
+          if (!d || !d.summary || d.guest) { box.innerHTML = '<div class="me-stat"><b>–</b><span>游客模式</span></div>'; return; }
+          var s = d.summary;
+          box.innerHTML =
+            '<div class="me-stat"><b>' + (s.learned_total || 0) + '</b><span>已学词数</span></div>' +
+            '<div class="me-stat"><b>' + (s.mastered_total || 0) + '</b><span>已掌握</span></div>' +
+            '<div class="me-stat"><b>' + (s.streak || 0) + '</b><span>连续天数</span></div>';
+        }).catch(function () {});
+        authFetch('/api/badges').then(function (r) { return r.json(); }).then(function (d) {
+          var el = document.getElementById('meBadge');
+          if (el && d && d.unlocked) el.textContent = '已解锁 ' + d.unlocked.length + ' 枚';
+        }).catch(function () {});
+      }
+      var out = document.getElementById('meLogout');
+      if (out) out.onclick = function (e) {
+        e.preventDefault();
+        if (typeof logout === 'function') logout();
+        else { localStorage.removeItem('word3500_auth'); location.href = '/login'; }
+      };
+    })();
+  </script>
+</body>
+</html>

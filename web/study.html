@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>我的学习 - 高考英语词汇3500</title>
+  <script data-cfasync="false">
+    (function(){
+      try {
+        var s = JSON.parse(localStorage.getItem('word3500_auth'));
+        if (!s || (!s.access_token && !s.refresh_token)) {
+          location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+          return;
+        }
+        window.__auth_user = s.user || null;
+      } catch(e) {
+        location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+      }
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round'><path d='M7 24V14M14 24V8M21 24V17M27 24V5'/></g></svg>">
+  <link rel="stylesheet" href="style.css?v=20261107b">
+  <link rel="stylesheet" href="study.css?v=20261108b">
+</head>
+<body>
+  <div class="st">
+
+    <header class="st-head">
+      <div>
+        <h1>我的学习</h1>
+        <p class="st-sub" id="stSub">打卡、日历、掌握率与复习计划</p>
+      </div>
+      <div class="st-head-right">
+        <span id="userBar" class="user-bar" style="display:none">
+          <span id="userName"></span>
+          <button id="logoutBtn" class="logout-btn" title="退出登录">退出</button>
+        </span>
+      </div>
+    </header>
+
+    <div id="stError" class="st-error" hidden></div>
+    <div id="stLoading" class="st-loading">正在加载学习数据…</div>
+
+    <!-- 游客引导 -->
+    <section id="stGuest" class="st-card st-guest" hidden>
+      <h2>游客模式不保存学习记录</h2>
+      <p>打卡、日历、掌握率与复习计划都需要账号来累计。<br>注册后你已有的收藏会保留，从今天开始记录学习。</p>
+      <a class="st-btn st-btn-primary" href="/register" style="text-decoration:none;display:inline-block">注册账号</a>
+      <a class="st-btn" href="/login" style="text-decoration:none;display:inline-block;margin-left:8px">已有账号登录</a>
+    </section>
+
+    <div id="stBody" hidden>
+
+      <!-- 打卡 -->
+      <section class="st-hero" id="stHero">
+        <div class="st-hero-top">
+          <div>
+            <div class="st-hero-state">
+              <span class="st-hero-badge" id="stCheckBadge">今日未打卡</span>
+              <span id="stCheckHint">答满 10 题或新学 5 词即可打卡</span>
+            </div>
+            <div class="st-hero-nums" id="stHeroNums"></div>
+          </div>
+          <div class="st-hero-streak">
+            <b id="stStreak">0</b>
+            <span>连续学习天数</span>
+          </div>
+        </div>
+        <div class="st-progress">
+          <div class="st-progress-track"><div class="st-progress-fill" id="stGoalFill"></div></div>
+          <p class="st-progress-text" id="stGoalText"></p>
+        </div>
+      </section>
+
+      <!-- KPI -->
+      <section class="st-kpis" id="stKpis" aria-label="学习概览"></section>
+
+      <!-- 日历 -->
+      <section class="st-card">
+        <div class="st-card-head">
+          <h2>学习日历</h2>
+          <div class="st-cal-top">
+            <button class="st-icon-btn" id="stCalPrev" title="上个月">‹</button>
+            <span class="st-cal-title" id="stCalTitle">—</span>
+            <button class="st-icon-btn" id="stCalNext" title="下个月">›</button>
+          </div>
+        </div>
+        <div class="st-cal-week">
+          <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+        </div>
+        <div class="st-cal-grid" id="stCalGrid"></div>
+        <div class="st-cal-legend">
+          <span><i style="background:var(--bg-card)"></i>未学习</span>
+          <span><i style="background:rgba(47,111,237,.16)"></i>1–10</span>
+          <span><i style="background:rgba(47,111,237,.34)"></i>11–30</span>
+          <span><i style="background:var(--primary)"></i>30+</span>
+          <span><i class="mk"></i>补签</span>
+        </div>
+      </section>
+
+      <!-- 掌握率 -->
+      <section class="st-card">
+        <div class="st-card-head">
+          <h2>掌握率趋势</h2>
+          <div class="st-tabs" id="stTrendTabs">
+            <button data-days="7">7 天</button>
+            <button data-days="30" class="active">30 天</button>
+            <button data-days="90">90 天</button>
+          </div>
+        </div>
+        <div class="st-chart" id="stTrendChart"></div>
+        <div class="st-newbars" id="stNewBars"></div>
+        <div class="st-newbars-label"><span id="stTrendFrom"></span><span id="stTrendTo"></span></div>
+        <p class="st-note" id="stTrendNote">掌握率 = 累计已掌握 ÷ 累计已学；分母随学习增长，曲线可能因拓展新词而回落。</p>
+      </section>
+
+      <!-- 词类 -->
+      <section class="st-card">
+        <div class="st-card-head">
+          <h2>词类掌握情况</h2>
+          <span class="st-muted">点击查看该类单词</span>
+        </div>
+        <div class="st-pos-list" id="stPosList"></div>
+        <div class="st-insight" id="stPosInsight" hidden></div>
+      </section>
+
+      <!-- 复习 -->
+      <section class="st-card">
+        <div class="st-card-head">
+          <h2>复习计划</h2>
+          <span class="st-muted">按遗忘曲线自动排期</span>
+        </div>
+        <div class="st-review-grid" id="stReviewBoxes"></div>
+        <div class="st-overdue" id="stOverdue"></div>
+        <div class="st-review-action">
+          <button class="st-btn st-btn-primary" id="stReviewBtn" disabled>开始复习</button>
+          <span class="st-muted" id="stReviewHint"></span>
+        </div>
+      </section>
+
+      <!-- 分册 -->
+      <section class="st-card">
+        <div class="st-card-head">
+          <h2>分册 / 单元进度</h2>
+          <span class="st-muted" id="stBookTotal"></span>
+        </div>
+        <div id="stBooks"></div>
+      </section>
+
+      <!-- 排行榜 -->
+      <section class="st-card">
+        <div class="st-card-head">
+          <h2>学习排行榜</h2>
+          <div class="st-tabs" id="stLbTabs">
+            <button data-metric="words" class="active">本周学习</button>
+            <button data-metric="streak">连续天数</button>
+            <button data-metric="mastered">掌握总数</button>
+            <button data-range="all">总榜</button>
+          </div>
+        </div>
+        <div class="st-lb-list" id="stLbList"></div>
+        <p class="st-note" id="stLbNote"></p>
+      </section>
+
+      <!-- 徽章 -->
+      <section class="st-card" id="badges">
+        <div class="st-card-head">
+          <h2>我的徽章</h2>
+          <span class="st-muted" id="stBadgeCount"></span>
+        </div>
+        <div id="stBadges"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 抽屉：某日明细 -->
+  <div class="st-mask" id="stMask"></div>
+  <div class="st-drawer" id="stDrawer" role="dialog" aria-modal="true" aria-labelledby="stDrawerTitle">
+    <div class="st-drawer-head">
+      <h3 id="stDrawerTitle">当日明细</h3>
+      <button class="st-drawer-close" id="stDrawerClose" aria-label="关闭">×</button>
+    </div>
+    <div id="stDrawerBody"></div>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script src="/js/charts.js?v=20261108" data-cfasync="false"></script>
+  <script src="js/study.js?v=20261108" data-cfasync="false"></script>
+</body>
+</html>

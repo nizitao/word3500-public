@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: 后端（Python ${{ matrix.python-version }}）
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 项目零第三方依赖，不需要 pip install；只做语法编译检查
+      - name: 语法编译检查
+        run: python -m compileall -q api tools tests
+
+      # 测试自带沙箱（临时目录 + 真实 HTTP 服务 + 合成数据库），不依赖 data/*.db
+      - name: 单元与接口测试
+        run: python -m unittest discover -s tests -v
+        env:
+          PYTHONIOENCODING: utf-8
+
+  frontend:
+    name: 前端（node --check）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: JS 语法检查
+        run: |
+          set -euo pipefail
+          for f in web/js/*.js; do
+            node --check "$f"
+          done
+
+  secrets:
+    name: 敏感文件检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 生产数据库 / 初始口令绝不能进仓库（.gitignore 已有，这里是第二道闸）
+      - name: 禁止提交数据库与口令文件
+        run: |
+          set -euo pipefail
+          bad=$(git ls-files | grep -E '(^|/)(users|words)\.db($|-)|initial_admin_password\.txt$' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::以下敏感文件被纳入了版本库："
+            echo "$bad"
+            exit 1
+          fi
+          echo "OK: 没有数据库或初始口令文件被提交"

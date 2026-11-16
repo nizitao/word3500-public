@@ -1,0 +1,88 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liquid Glass Demo · 真实折射</title>
+<!-- 复用项目同款玻璃视觉（.controls / 扫光 / 边缘张力） -->
+<link rel="stylesheet" href="style.css?v=20260818">
+<style>
+  :root { --bg-controls: #cfe0ff; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 220vh; color: #fff;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* 彩色背景：让"折射扭曲"肉眼可见（纯色背景下折射看不出来） */
+    background:
+      radial-gradient(circle at 18% 18%, #ff6b6b 0, transparent 38%),
+      radial-gradient(circle at 82% 28%, #4dabf7 0, transparent 42%),
+      radial-gradient(circle at 50% 78%, #ffd43b 0, transparent 42%),
+      radial-gradient(circle at 30% 88%, #69db7c 0, transparent 40%),
+      linear-gradient(135deg, #1a1a2e, #16213e);
+  }
+  .demo-content { max-width: 760px; margin: 0 auto; padding: 140px 24px 200px; }
+  .demo-content h1 { font-size: 34px; letter-spacing: .5px; }
+  .demo-content p { font-size: 18px; line-height: 1.9; opacity: .92; }
+  .demo-content .filler { opacity: .6; }
+  .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+  /* 演示控制：拖动滑块实时调折射强度 */
+  .panel {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 50; padding: 10px 16px; border-radius: 12px; font-size: 14px;
+    background: rgba(20,20,40,.65); backdrop-filter: blur(8px); color: #fff;
+    display: flex; gap: 12px; align-items: center;
+  }
+</style>
+</head>
+<body>
+  <div class="demo-content">
+    <h1>液态玻璃 · Liquid Glass</h1>
+    <p>向下滚动，观察顶部控制栏：背景被<b>真实折射扭曲</b>（像素级 SDF 位移），而不是简单的高斯模糊。前景按钮始终保持锐利清晰。</p>
+
+    <!-- 模拟控制栏（复用 .controls 样式） -->
+    <div class="controls">
+      <button>上一页</button>
+      <button>下一页</button>
+      <span class="sep">|</span>
+      <label>页码</label>
+      <input class="page-input" style="width:60px" />
+      <span id="pageInfo">1 / 10</span>
+      <a href="#">收藏</a>
+      <span class="sep">|</span>
+      <button>设置</button>
+    </div>
+
+    <p class="filler">占位文本用于产生滚动，让背景在玻璃后移动，从而体现折射动态变化。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <p class="filler">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p class="filler">滚动时留意玻璃边缘的"曲面张力"与右上角周期性扫过的镜面高光——这正是 iOS 26 Liquid Glass 的标志性观感。</p>
+  </div>
+
+  <div class="panel">
+    <label>折射强度
+      <input id="edge" type="range" min="6" max="48" value="22" />
+    </label>
+  </div>
+
+  <script src="/js/liquid-glass.js?v=20260818"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script>
+    window.addEventListener('load', function () {
+      var el = document.querySelector('.controls');
+      if (!el || !window.applyLiquidGlass) return;
+      window.__lg = window.applyLiquidGlass(el, {
+        edge: 22, blur: 0.4, saturate: 1.15, brightness: 1.05, contrast: 1.06
+      });
+      document.getElementById('edge').addEventListener('input', function (e) {
+        if (window.__lg) window.__lg.destroy();
+        window.__lg = window.applyLiquidGlass(el, {
+          edge: +e.target.value, blur: 0.4, saturate: 1.15, brightness: 1.05, contrast: 1.06
+        });
+      });
+    });
+  </script>
+</body>
+</html>

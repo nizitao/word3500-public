@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>一起背 - 高考英语词汇3500</title>
+  <script data-cfasync="false">
+    (function(){
+      try {
+        var s = JSON.parse(localStorage.getItem('word3500_auth'));
+        if (!s || (!s.access_token && !s.refresh_token)) {
+          location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+          return;
+        }
+        window.__auth_user = s.user || null;
+      } catch(e) { location.replace('/login'); }
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round'><path d='M7 24V14M14 24V8M21 24V17M27 24V5'/></g></svg>">
+  <link rel="stylesheet" href="style.css?v=20261107b">
+  <link rel="stylesheet" href="together.css?v=20261108c">
+</head>
+<body>
+  <div class="tg">
+
+    <header class="tg-head">
+      <div>
+        <h1>一起背</h1>
+        <p class="tg-sub">和同学约定同一份词表，互相看见进度，把一个人坚持变成一群人坚持</p>
+      </div>
+      <div class="tg-head-right">
+        <button class="tg-btn tg-btn-sm" id="tgRefresh" type="button">刷新</button>
+      </div>
+    </header>
+
+    <div id="tgError" class="tg-error" hidden></div>
+    <div id="tgNotice" class="tg-notice" role="status" aria-live="polite" hidden></div>
+    <div id="tgLoading" class="tg-loading">正在加载房间…</div>
+
+    <!-- 游客引导 -->
+    <section id="tgGuest" class="tg-card tg-guest" hidden>
+      <h2>游客模式不能参与房间</h2>
+      <p>房间进度来自每个人的每日学习统计，游客不保存学习记录。<br>注册或登录后即可创建房间、加入同学并互相点赞。</p>
+      <a class="tg-btn tg-btn-primary" style="width:auto" href="/register">注册账号</a>
+      <a class="tg-btn" href="/login">已有账号登录</a>
+    </section>
+
+    <div id="tgBody" hidden>
+      <div class="tg-grid">
+
+        <!-- 左栏：创建 / 加入 + 我的房间 -->
+        <div class="tg-left">
+          <section class="tg-card">
+            <div class="tg-card-head"><h2>创建或加入</h2></div>
+            <div class="tg-tabs">
+              <button class="tg-tab on" id="tgTabCreate" type="button">创建房间</button>
+              <button class="tg-tab" id="tgTabJoin" type="button">凭邀请码加入</button>
+            </div>
+
+            <form id="tgCreateForm" autocomplete="off">
+              <div class="tg-field">
+                <label for="tgName">房间名称</label>
+                <input class="tg-input" id="tgName" maxlength="24" placeholder="例如：高三二班晨读" required>
+              </div>
+              <div class="tg-field">
+                <label for="tgBook">共享词表 · 分册</label>
+                <select class="tg-select" id="tgBook"><option value="">全部词库</option></select>
+              </div>
+              <div class="tg-field">
+                <label for="tgUnit">共享词表 · 单元（可选）</label>
+                <select class="tg-select" id="tgUnit" disabled><option value="">整册一起背</option></select>
+              </div>
+              <button class="tg-btn tg-btn-primary" id="tgCreateBtn" type="submit">创建房间</button>
+              <p class="tg-hint">房间成员看到同一份词表；进度只读每日统计，与「我的学习」口径完全一致。</p>
+            </form>
+
+            <form id="tgJoinForm" autocomplete="off" hidden>
+              <div class="tg-field">
+                <label for="tgCode">6 位邀请码</label>
+                <input class="tg-input tg-code-input" id="tgCode" maxlength="6" placeholder="ABC234" required>
+              </div>
+              <button class="tg-btn tg-btn-primary" id="tgJoinBtn" type="submit">加入房间</button>
+              <p class="tg-hint">向同学索要房间邀请码，或点击带有 <b>?code=</b> 的分享链接直接加入。</p>
+            </form>
+          </section>
+
+          <section class="tg-card">
+            <div class="tg-card-head">
+              <h2>我的房间</h2><span class="tg-muted" id="tgRoomCount"></span>
+            </div>
+            <div id="tgRoomList"></div>
+          </section>
+        </div>
+
+        <!-- 右栏：房间详情 -->
+        <div class="tg-right">
+          <div id="tgDetail"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script src="/js/together.js?v=20261108b" data-cfasync="false"></script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>注册 - 高考英语词汇3500</title>
+      <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 8h12v15h-2a2 2 0 0 0-2 2H11a2 2 0 0 1-2-2z'/><path d='M9 25a2 2 0 0 1 2-2h12'/></g></svg>">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .register-container {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .register-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid var(--border-light);
+    }
+    .register-card h2 {
+      text-align: center;
+      font-size: 22px;
+      margin: 0 0 6px;
+      color: var(--text-primary);
+    }
+    .register-card .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .field-error {
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 3px;
+      min-height: 16px;
+    }
+    .register-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .15s;
+    }
+    .register-btn:hover { background: var(--primary-hover); }
+    .register-btn:disabled { opacity: .55; cursor: not-allowed; }
+    .success-msg {
+      text-align: center;
+      color: #16a34a;
+      font-size: 14px;
+      margin-top: 16px;
+      padding: 10px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      display: none;
+    }
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+    .error-msg.visible {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .footer-links {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .footer-links a:hover { text-decoration: underline; }
+    .loading-spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-card">
+      <h2>创建账户</h2>
+      <p class="subtitle">注册后即可使用高考英语词汇3500</p>
+
+      <form id="registerForm" autocomplete="off" novalidate>
+        <div class="form-group">
+          <label for="username">用户名 <span style="color:#dc2626">*</span></label>
+          <input type="text" id="username" name="username" placeholder="2-20个字符，字母开头" required minlength="2" maxlength="20" pattern="[a-zA-Z][a-zA-Z0-9_]*">
+          <div class="field-error" id="usernameErr"></div>
+        </div>
+        <div class="form-group">
+          <label for="password">密码 <span style="color:#dc2626">*</span></label>
+          <input type="password" id="password" name="password" placeholder="至少 6 位" required minlength="6">
+          <div class="field-error" id="passwordErr"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">确认密码 <span style="color:#dc2626">*</span></label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="再次输入密码" required minlength="6">
+          <div class="field-error" id="confirmErr"></div>
+        </div>
+        <div class="form-group">
+          <label for="email">邮箱</label>
+          <input type="email" id="email" name="email" placeholder="可选，用于找回密码">
+          <div class="field-error" id="emailErr"></div>
+        </div>
+        <button type="submit" class="register-btn" id="registerBtn">注 册</button>
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="success-msg" id="successMsg">
+          注册成功！<a href="/login">点击此处登录</a>
+        </div>
+      </form>
+
+      <div class="footer-links">
+        已有账户？<a href="/login">立即登录</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script>
+    // 表单逻辑
+    (function () {
+      var form = document.getElementById('registerForm');
+      var btn = document.getElementById('registerBtn');
+      var errEl = document.getElementById('errorMsg');
+      var successEl = document.getElementById('successMsg');
+      var usernameEl = document.getElementById('username');
+      var passwordEl = document.getElementById('password');
+      var confirmEl = document.getElementById('confirmPassword');
+      var emailEl = document.getElementById('email');
+
+      function showField(id, msg) {
+        document.getElementById(id).textContent = msg || '';
+      }
+
+      var usernameTimer = null;
+
+      usernameEl.addEventListener('input', function() {
+        var v = usernameEl.value.trim();
+        // 基本格式校验
+        if (!v) { showField('usernameErr', ''); return; }
+        if (v.length < 2) { showField('usernameErr', '至少 2 个字符'); return; }
+        if (!/^[a-zA-Z]/.test(v)) { showField('usernameErr', '必须以字母开头'); return; }
+        if (!/^[a-zA-Z][a-zA-Z0-9_]{0,19}$/.test(v)) { showField('usernameErr', '仅允许字母、数字和下划线'); return; }
+
+        // 格式通过 → 防抖查重（500ms）
+        showField('usernameErr', '');
+        if (usernameTimer) clearTimeout(usernameTimer);
+        usernameTimer = setTimeout(async function() {
+          try {
+            var res = await fetch('/api/auth/check-username?username=' + encodeURIComponent(v));
+            var data = await res.json();
+            if (data.available) {
+              showField('usernameErr', '');
+            } else if (data.reason === 'too_short') {
+              showField('usernameErr', '至少 2 个字符');
+            } else {
+              showField('usernameErr', '用户名已被占用');
+            }
+          } catch(_) { /* 网络异常忽略 */ }
+        }, 500);
+      });
+
+      passwordEl.addEventListener('input', function() {
+        var v = passwordEl.value;
+        if (!v) showField('passwordErr', '');
+        else if (v.length < 6) showField('passwordErr', '至少 6 位');
+        else showField('passwordErr', '');
+      });
+
+      confirmEl.addEventListener('input', function() {
+        var v = confirmEl.value;
+        if (!v) showField('confirmErr', '');
+        else if (v !== passwordEl.value) showField('confirmErr', '两次密码不一致');
+        else showField('confirmErr', '');
+      });
+
+      emailEl.addEventListener('input', function() {
+        var v = emailEl.value.trim();
+        if (!v) showField('emailErr', '');
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) showField('emailErr', '邮箱格式不正确');
+        else showField('emailErr', '');
+      });
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        errEl.className = 'error-msg';
+        errEl.textContent = '';
+        successEl.style.display = 'none';
+
+        var username = usernameEl.value.trim();
+        var password = passwordEl.value;
+        var confirm = confirmEl.value;
+        var email = emailEl.value.trim();
+
+        // 前端校验
+        if (!username || !password || !confirm) {
+          errEl.textContent = '请填写所有必填字段';
+          errEl.className = 'error-msg visible';
+          return;
+        }
+        if (username.length < 2) {
+          errEl.textContent = '用户名至少 2 个字符';
+          errEl.className = 'error-msg visible';
+          return;
+        }
+        if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(username)) {
+          errEl.textContent = '用户名格式不正确（字母开头，仅允许字母数字下划线）';
+          errEl.className = 'error-msg visible';
+          return;
+        }
+        if (password.length < 6) {
+          errEl.textContent = '密码至少 6 位';
+          errEl.className = 'error-msg visible';
+          return;
+        }
+        if (password !== confirm) {
+          errEl.textContent = '两次密码不一致';
+          errEl.className = 'error-msg visible';
+          return;
+        }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errEl.textContent = '邮箱格式不正确';
+          errEl.className = 'error-msg visible';
+          return;
+        }
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span>注册中…';
+
+        try {
+          var res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: username, password: password,
+              display_name: username, email: email
+            }),
+          });
+          var data = await res.json();
+          if (!res.ok) throw new Error(data.message || '注册失败');
+          successEl.style.display = 'block';
+          form.reset();
+        } catch (err) {
+          errEl.textContent = err.message || '注册失败，请重试';
+          errEl.className = 'error-msg visible';
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '注 册';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

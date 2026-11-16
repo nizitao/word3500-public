@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>数据报表 - 高考英语词汇3500</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round'><path d='M7 24V14M14 24V8M21 24V17M27 24V5'/></g></svg>">
+  <link rel="stylesheet" href="style.css?v=20261107b">
+  <link rel="stylesheet" href="report.css?v=20261102">
+</head>
+<body>
+  <div class="rpt">
+
+    <header class="rpt-head">
+      <div class="rpt-head-left">
+        <div class="rpt-nav">
+          <a href="/" class="rpt-nav-link">首页</a>
+          <a href="/admin" class="rpt-nav-link">用户管理</a>
+          <span class="rpt-nav-current">数据报表</span>
+        </div>
+        <h1>数据报表</h1>
+        <p class="rpt-sub">访问趋势与用户行为分析 · <span id="rptRangeText">加载中…</span></p>
+      </div>
+      <div class="rpt-head-right">
+        <span id="rptOnlineMini" class="rpt-online-mini" title="当前在线人数">
+          <i class="rpt-live-dot"></i>在线 <b id="rptOnlineNum">–</b> 人
+        </span>
+        <span id="userBar" class="user-bar" style="display:none">
+          <span id="userName"></span>
+          <button id="logoutBtn" class="logout-btn" title="退出登录">退出</button>
+        </span>
+      </div>
+    </header>
+
+    <section class="rpt-card rpt-filter">
+      <div class="rpt-filter-row">
+        <label class="rpt-field"><span>开始日期</span><input type="date" id="rptFrom"></label>
+        <label class="rpt-field"><span>结束日期</span><input type="date" id="rptTo"></label>
+        <button id="rptApply" class="rpt-btn rpt-btn-primary">查询</button>
+        <button id="rptCsv" class="rpt-btn">导出 CSV</button>
+      </div>
+      <div class="rpt-presets" id="rptPresets">
+        <button data-range="today">今日</button>
+        <button data-range="7">近 7 天</button>
+        <button data-range="30">近 30 天</button>
+        <button data-range="all">全部</button>
+      </div>
+      <p class="rpt-note" id="rptNote">数据来自服务端访问日志，按浏览器本地日期统计；统计接口自身请求不计入。</p>
+    </section>
+
+    <div id="rptError" class="rpt-error" hidden></div>
+    <div id="rptLoading" class="rpt-loading">正在加载报表数据…</div>
+
+    <main id="rptContent" hidden>
+      <section class="rpt-cards" id="rptCards" aria-label="核心指标"></section>
+
+      <div class="rpt-grid">
+        <section class="rpt-card rpt-col-wide">
+          <div class="rpt-card-head">
+            <h2>访问趋势</h2>
+            <div class="rpt-legend" id="rptLegend"></div>
+          </div>
+          <div class="rpt-chart" id="rptTrendChart"></div>
+        </section>
+
+        <section class="rpt-card">
+          <div class="rpt-card-head">
+            <h2>用户行为分布</h2>
+            <span class="rpt-muted" id="rptTotalEvents"></span>
+          </div>
+          <div id="rptBehaviors" class="rpt-behaviors"></div>
+        </section>
+      </div>
+
+      <div class="rpt-grid">
+        <section class="rpt-card">
+          <div class="rpt-card-head"><h2>热门页面 Top 8</h2><span class="rpt-muted">浏览量</span></div>
+          <div id="rptTopPages" class="rpt-top-pages"></div>
+        </section>
+
+        <section class="rpt-card">
+          <div class="rpt-card-head"><h2>时段分布</h2><span class="rpt-muted">本地时间</span></div>
+          <div class="rpt-chart" id="rptHourly"></div>
+        </section>
+      </div>
+
+      <p class="rpt-foot" id="rptFoot"></p>
+    </main>
+  </div>
+
+  <script src="/js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script src="/js/report.js?v=20261102" data-cfasync="false"></script>
+</body>
+</html>

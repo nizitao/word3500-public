@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登录 - 高考英语词汇3500</title>
+      <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 8h12v15h-2a2 2 0 0 0-2 2H11a2 2 0 0 1-2-2z'/><path d='M9 25a2 2 0 0 1 2-2h12'/></g></svg>">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-container {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--border-light);
+    }
+    .login-card h2 {
+      text-align: center;
+      font-size: 22px;
+      margin: 0 0 6px;
+      color: var(--text-primary);
+    }
+    .login-card .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+      box-sizing: border-box;
+      background: var(--bg-input);
+      color: var(--text-primary);
+    }
+    .form-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background .15s;
+    }
+    .login-btn:hover { background: var(--primary-hover); }
+    .login-btn:disabled { opacity: .55; cursor: not-allowed; }
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+    .error-msg.visible {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .sso-notice {
+      margin-top: 20px;
+      padding: 10px 12px;
+      background: var(--focus-ring);
+      border: 1px solid rgba(47,111,237,.2);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .footer-links {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .footer-links a:hover { text-decoration: underline; }
+    .register-link {
+      display: inline-block;
+      padding: 8px 20px;
+      background: var(--bg-card);
+      color: var(--primary) !important;
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      text-decoration: none !important;
+      transition: background .15s, color .15s;
+    }
+    .register-link:hover {
+      background: var(--primary);
+      color: #fff !important;
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h2>高考英语词汇3500</h2>
+      <p class="subtitle">请登录以继续使用</p>
+
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input type="text" id="username" name="username" placeholder="请输入用户名" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" name="password" placeholder="请输入密码" required>
+        </div>
+        <button type="submit" class="login-btn" id="loginBtn">登 录</button>
+        <div class="error-msg" id="errorMsg"></div>
+      </form>
+
+      <!-- 首启随机口令：登录后必须先改密，未改密时服务端只放行改密/登出接口 -->
+      <form id="changePwForm" autocomplete="off" hidden>
+        <p class="subtitle" style="color:var(--danger,#dc2626)">首次登录，请先修改初始口令</p>
+        <div class="form-group">
+          <label for="oldPassword">当前口令（初次启动时生成的随机口令）</label>
+          <input type="password" id="oldPassword" placeholder="见 data/initial_admin_password.txt" required>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">新密码（至少 6 位）</label>
+          <input type="password" id="newPassword" name="new_password" placeholder="请输入新密码" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">确认新密码</label>
+          <input type="password" id="confirmPassword" placeholder="再输入一次" required>
+        </div>
+        <button type="submit" class="login-btn" id="changePwBtn">修改并进入</button>
+        <div class="error-msg" id="changePwErr"></div>
+      </form>
+
+      <div style="text-align:center;margin-top:16px">
+        <a href="/register" class="register-link">还没有账户？立即注册</a>
+      </div>
+
+      <div class="sso-notice">
+        本系统支持 OAuth 2.0/OpenID Connect 单点登录协议
+        项目主页 https://github.com/nizitao/word3500-public
+      </div>
+
+      <div class="footer-links">
+        <a href="index.html">返回主页</a>
+        <span style="margin:0 6px;color:#cfd6e0">|</span>
+        <a href="/api/auth/guest-login" id="guestLink">游客体验（无需注册）</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+</body>
+</html>

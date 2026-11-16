@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2026 word3500 contributors
+# SPDX-License-Identifier: GPL-3.0
+
+# ============================================================
+# word3500 - .gitignore
+# 部署规则: users.db 一律以线上生产环境为准, 禁止从本地覆盖上传
+# ============================================================
+
+# ---- IDE / 工具目录 ----
+# 严禁上传 IDE/工具目录 (含记忆/缓存等本地数据)
+.codebuddy/
+.workbuddy/
+.workbuddy-ai/
+
+# Python 缓存
+__pycache__/
+*.pyc
+__pycache__
+
+# ---- 临时/构建目录 ----
+paste_/
+paste/
+temp/
+
+# ---- 开发期临时验收脚本 / 服务日志（不进公开仓库）----
+_*.mjs
+_*.py
+_dev*
+_min_backup/
+
+# ---- 数据库 (敏感/线上为准) ----
+# 本地用户库: 线上数据为准, 禁止上传覆盖
+users.db
+# 单词库可由部署脚本替换, 本地不传
+words.db
+# SQLite WAL 模式产生的临时文件
+*.db-wal
+*.db-shm
+# 备份文件（含合并前的旧版 server，依赖 requests，不应随项目部署）
+*.bak
+*.bak_*
+*.bak-*
+word3500.db.bak
+words.db.bak
+# 本地开发服务重定向日志（重启服务时生成，不随项目部署）
+_dev8000.*
+# 旧版合并库(已拆分为 users.db + words.db, 不传)
+word3500.db
+
+# ---- 运行时/本地数据 ----
+*.log
+.DS_Store
+# 首启随机生成的管理员初始口令（绝不入库）
+data/initial_admin_password.txt

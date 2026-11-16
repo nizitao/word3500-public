@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<!-- SPDX-FileCopyrightText: 2026 word3500 contributors -->
+<!-- SPDX-License-Identifier: GPL-3.0 -->
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>搜索 - 高考英语词汇3500</title>
+  <script data-cfasync="false">
+    (function(){
+      try {
+        var s = JSON.parse(localStorage.getItem('word3500_auth'));
+        // 只要还有 access_token 或 refresh_token 就放行：access_token 过期时
+        // 由 js/auth.js 的 authFetch 自动换新。原实现一过期就跳登录页，
+        // 使 7 天有效的 refresh_token 完全没机会生效。
+        if (!s || (!s.access_token && !s.refresh_token)) {
+          location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+          return;
+        }
+        window.__auth_user = s.user || null;
+      } catch(e) {
+        location.replace('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+      }
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f6fed'/><g fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 8h12v15h-2a2 2 0 0 0-2 2H11a2 2 0 0 1-2-2z'/><path d='M9 25a2 2 0 0 1 2-2h12'/></g></svg>">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ---- 搜索页专用 ---- */
+    .search-container {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+    .search-card {
+      width: 100%;
+      max-width: 640px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      padding: 28px 28px 32px;
+      border: 1px solid var(--border-light);
+    }
+    .search-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 12px;
+    }
+    .search-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    .search-header .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      border: 1px solid var(--border-default);
+      background: var(--bg-btn-ghost);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, border-color .15s;
+    }
+    .back-btn:hover {
+      background: var(--bg-hover);
+      border-color: #b6c2d4;
+    }
+    .back-btn svg { width: 15px; height: 15px; }
+
+    /* 搜索主区域 */
+    .search-box-wrap {
+      margin-bottom: 28px;
+    }
+    .search-bar {
+      display: flex;
+      gap: 0;
+      border: 2px solid var(--border-default);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+      background: var(--bg-input);
+    }
+    .search-bar:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+    .search-bar select {
+      border: none;
+      background: var(--bg-btn-ghost);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      outline: none;
+      min-width: 72px;
+      border-right: 1px solid var(--border-default);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 26px;
+    }
+    .search-bar input {
+      flex: 1;
+      border: none;
+      padding: 10px 14px;
+      font-size: 15px;
+      outline: none;
+      min-width: 0;
+      background: transparent;
+      color: var(--text-primary);
+    }
+    .search-bar input::placeholder { color: var(--text-muted); }
+    .search-bar button {
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .search-bar button:hover { background: var(--primary-hover); }
+    .search-bar button svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .search-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* 结果区 */
+    #searchResults {
+      min-height: 60px;
+    }
+    .result-count {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-lighter);
+    }
+    .result-count strong { color: var(--text-primary); }
+
+    /* 单词卡片 */
+    .word-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--border-lighter);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, box-shadow .15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .word-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-default);
+      box-shadow: var(--shadow-sm);
+    }
+    .word-card:active {
+      background: var(--bg-hover);
+    }
+    .word-card .idx {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-btn-ghost);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .word-card .body {
+      flex: 1;
+      min-width: 0;
+    }
+    .word-card .body .word {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: block;
+      line-height: 1.3;
+    }
+    .word-card .body .pron {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 1px;
+    }
+    .word-card .body .mean {
+      font-size: 14px;
+      color: var(--text-secondary);
+      display: block;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .word-card .arrow {
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform .15s, color .15s;
+    }
+    .word-card:hover .arrow {
+      color: var(--primary);
+      transform: translateX(3px);
+    }
+    .word-card .arrow svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: block;
+    }
+
+    /* 匹配高亮 */
+    .word-card .body mark {
+      background: #fff3bf;
+      color: #a6791a;
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+    [data-theme="dark"] .word-card .body mark {
+      background: #78350f;
+      color: #fde68a;
+    }
+
+    /* 加载/空态 */
+    .search-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .search-loading .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border-default);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .search-empty {
+      text-align: center;
+      padding: 50px 0 30px;
+      color: var(--text-muted);
+    }
+    .search-empty .empty-icon {
+      width: 48px;
+      height: 48px;
+      stroke: var(--border-default);
+      fill: none;
+      stroke-width: 1.5;
+      margin-bottom: 12px;
+    }
+    .search-empty .empty-text {
+      font-size: 15px;
+    }
+    .search-empty .empty-sub {
+      font-size: 13px;
+      margin-top: 4px;
+      color: var(--text-muted);
+    }
+
+    /* 底部用户栏 */
+    .search-footer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-lighter);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 480px) {
+      .search-card { padding: 20px 16px 24px; }
+      .search-bar { flex-wrap: wrap; }
+      .search-bar select { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+      .search-bar button { padding: 10px 16px; }
+      .word-card { padding: 12px 14px; gap: 10px; }
+      .word-card .body .word { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <div class="search-card">
+      <!-- 头部 -->
+      <div class="search-header">
+        <h2><svg style="width:22px;height:22px;vertical-align:-4px;margin-right:6px;stroke:#2f6fed;fill:none;stroke-width:2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>搜索单词</h2>
+        <div class="header-actions">
+          <a href="index.html" class="back-btn"><svg viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>返回主页</a>
+        </div>
+      </div>
+
+      <!-- 搜索栏 -->
+      <div class="search-box-wrap">
+        <form id="searchForm" class="search-bar">
+          <select name="pattern">
+            <option value="fuzzy" selected>模糊</option>
+            <option value="contain">英文</option>
+            <option value="begin">开头</option>
+            <option value="end">结尾</option>
+            <option value="meaning">中文</option>
+          </select>
+          <input type="text" name="search" placeholder="输入单词或中文搜索..." autofocus>
+          <button type="submit">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            搜索
+          </button>
+        </form>
+        <div class="search-hint">模糊模式容忍拼写错误与字符顺序颠倒，边输入边实时搜索，匹配文本高亮显示</div>
+      </div>
+
+      <!-- 结果 -->
+      <div id="searchResults">
+        <div class="search-empty">
+          <svg class="empty-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+          <div class="empty-text">输入关键词开始搜索</div>
+          <div class="empty-sub">支持中英文搜索，也可输入编号直接定位</div>
+        </div>
+      </div>
+
+      <!-- 底部用户栏 -->
+      <div class="search-footer">
+        <span id="userBar" class="user-bar">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <span id="userName"></span>
+          <a id="adminLink" href="/admin" class="admin-link" title="用户管理">管理</a>
+        </span>
+        <button id="logoutBtn" class="logout-btn" onclick="if(typeof logout==='function')logout();else{localStorage.removeItem('word3500_auth');location.href='/login'}">退出登录</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/auth.js?v=20260815" data-cfasync="false"></script>
+  <script src="/js/online.js?v=20261102" data-cfasync="false"></script>
+  <script src="/js/nav.js?v=20261108b" data-cfasync="false"></script>
+  <script>
+    // 用户栏初始化
+    (function() {
+      var u = window.__auth_user;
+      if (!u) return;
+      document.getElementById('userName').textContent = u.display_name || u.username || '';
+      document.getElementById('adminLink').style.display = (u.role === 'admin') ? 'inline' : 'none';
+    })();
+  </script>
+  <script src="js/search.js" data-cfasync="false"></script>
+</body>
+</html>
